@@ -48,6 +48,7 @@ const Login = () => {
                 name='email'
                 value={email}
                 placeholder='Enter your email'
+                autoComplete='username'
                 onChange={onChange}
               />
             </StyledInputContainer>
@@ -58,15 +59,13 @@ const Login = () => {
                 name='password'
                 value={password}
                 placeholder='Enter your password'
+                autoComplete='new-password'
                 onChange={onChange}
               />
             </StyledInputContainer>
             <StyledButtonContainer>
               <Button
-                disabled={
-                  email === '' ||
-                  password === ''
-                }
+                disabled={email === '' || password === ''}
                 variant='contained'
                 color='primary'
                 type='submit'

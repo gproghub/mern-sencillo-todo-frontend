@@ -10,8 +10,16 @@ import {
 import { Snackbar } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { Button, IconButton } from '@mui/material';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { registerUser, reset } from '../../features/Authentication/userSlice';
 
 const Register = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { user, isError, isLoading, isSuccess, message } = useSelector(
+    (state) => state.user
+  );
   const [registerData, setRegisterData] = useState({
     name: '',
     email: '',
@@ -19,12 +27,28 @@ const Register = () => {
     confirmPassword: '',
   });
   const { name, email, password, confirmPassword } = registerData;
+  useEffect(() => {
+    if(isSuccess || user) {
+      navigate('/')
+    }
+  }, [])
 
+  //Form handlers
   const submitData = (e) => {
     e.preventDefault();
+    if (password !== confirmPassword) {
+      dispatch(reset());
+    } else {
+      const userData = {
+        name,
+        email,
+        password,
+      };
+      dispatch(registerUser(userData));
+    }
   };
 
-  const onChange = (e) => {
+  const onChangeHandler = (e) => {
     setRegisterData((prevState) => ({
       ...prevState,
       [e.target.name]: e.target.value,
@@ -50,7 +74,8 @@ const Register = () => {
                 name='name'
                 value={name}
                 placeholder='Enter your name'
-                onChange={onChange}
+                autoComplete='username'
+                onChange={onChangeHandler}
               />
             </StyledInputContainer>
             <StyledInputContainer>
@@ -60,7 +85,8 @@ const Register = () => {
                 name='email'
                 value={email}
                 placeholder='Enter your email'
-                onChange={onChange}
+                autoComplete='username'
+                onChange={onChangeHandler}
               />
             </StyledInputContainer>
             <StyledInputContainer>
@@ -70,7 +96,8 @@ const Register = () => {
                 name='password'
                 value={password}
                 placeholder='Enter your password'
-                onChange={onChange}
+                autoComplete='new-password'
+                onChange={onChangeHandler}
               />
             </StyledInputContainer>
             <StyledInputContainer>
@@ -80,7 +107,8 @@ const Register = () => {
                 name='confirmPassword'
                 value={confirmPassword}
                 placeholder='Confirm your password'
-                onChange={onChange}
+                autoComplete='new-password'
+                onChange={onChangeHandler}
               />
             </StyledInputContainer>
             <StyledButtonContainer>
