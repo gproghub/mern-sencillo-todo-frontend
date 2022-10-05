@@ -40,6 +40,44 @@ export const createTodo = createAsyncThunk(
   }
 );
 
+//Update to-do
+// const updateTodo = createAsyncThunk(
+//   'todos/updateTodo',
+//   async (todoId, thunkAPI) => {
+//     try {
+
+//     } catch (error) {
+//       const message =
+//         (error.response &&
+//           error.response.data &&
+//           error.response.data.message) ||
+//         error.message ||
+//         error.toString();
+//       return thunkAPI.rejectWithValue(message);
+//     }
+//   }
+// );
+
+export const deleteTodo = createAsyncThunk(
+  'todos/deleteTodo',
+  async (todoId, thunkAPI) => {
+    try {
+      return await todosService.deleteTodo(
+        thunkAPI.getState().auth.user.token,
+        todoId
+      );
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
 const initialState = {
   todos: [],
   isLoading: false,
@@ -78,6 +116,19 @@ const todosSlice = createSlice({
         state.todos.push(payload);
       })
       .addCase(createTodo.rejected, (state, { payload }) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = payload;
+      })
+      .addCase(deleteTodo.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(deleteTodo.fulfilled, (state, { payload }) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.todos = state.todos.filter((todo) => todo._id !== payload._id); //Siempre hay que mirar que estoy respondiendo desde el servidor.
+      })
+      .addCase(deleteTodo.rejected, (state, { payload }) => {
         state.isLoading = false;
         state.isError = true;
         state.message = payload;
