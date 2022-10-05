@@ -10,28 +10,38 @@ import {
 import { Snackbar } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { Button, IconButton } from '@mui/material';
+import Spinner from '../Spinner/Spinner';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { registerUser, reset } from '../../features/Authentication/userSlice';
+import { registerUser, reset } from '../../features/Authentication/authSlice';
 
 const Register = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { user, isError, isLoading, isSuccess, message } = useSelector(
-    (state) => state.user
+    (state) => state.auth
   );
-  const [registerData, setRegisterData] = useState({
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  const [registerFormData, setRegisterFormData] = useState({
     name: '',
     email: '',
     password: '',
     confirmPassword: '',
   });
-  const { name, email, password, confirmPassword } = registerData;
+  const { name, email, password, confirmPassword } = registerFormData;
+
   useEffect(() => {
-    if(isSuccess || user) {
-      navigate('/')
+    if (isError) {
+      setOpenSnackbar(true);
+      console.log(message);
+      setToastMessage(message);
     }
-  }, [])
+    if (isSuccess && user) {
+      navigate('/');
+      dispatch(reset());
+    }
+  }, [user, isLoading, isError, isSuccess, message, navigate, dispatch]);
 
   //Form handlers
   const submitData = (e) => {
@@ -49,11 +59,27 @@ const Register = () => {
   };
 
   const onChangeHandler = (e) => {
-    setRegisterData((prevState) => ({
+    setRegisterFormData((prevState) => ({
       ...prevState,
       [e.target.name]: e.target.value,
     }));
   };
+
+  const handleClose = () => {
+    setOpenSnackbar(false);
+  };
+
+  const action = (
+    <>
+      <IconButton onClick={handleClose}>
+        <CloseIcon fontSize='small' />
+      </IconButton>
+    </>
+  );
+
+  if (isLoading) {
+    return <Spinner />;
+  }
 
   return (
     <>
@@ -129,6 +155,17 @@ const Register = () => {
           </form>
         </StyledFormContainer>
       </StyledContainer>
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={4000}
+        onClose={handleClose}
+        message={toastMessage}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'center',
+        }}
+        action={action}
+      />
     </>
   );
 };

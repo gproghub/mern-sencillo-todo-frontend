@@ -1,20 +1,31 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://localhost:3005';
+const BASE_URL = 'http://localhost:3005/api/v1';
 
-const register = async (userData) => {
-  const response = await axios.post(
-    `${BASE_URL}/api/v1/users/register`,
-    userData
-  );
+const registerUser = async (userData) => {
+  const response = await axios.post(`${BASE_URL}/users/register`, userData);
   if (response.data) {
     localStorage.setItem('user', JSON.stringify(response.data));
   }
   return response.data;
 };
 
+const loginUser = async (userData) => {
+  const response = await axios.post(`${BASE_URL}/users/login`, userData);
+  if (response.data) {
+    localStorage.setItem('user', JSON.stringify(response.data));
+  }
+  return response.data;
+};
+
+const logoutUser =  () => {
+  localStorage.removeItem('user');
+};
+
 const authService = {
-  register
+  registerUser,
+  logoutUser,
+  loginUser,
 };
 
 export default authService;
