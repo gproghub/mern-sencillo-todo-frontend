@@ -17,6 +17,7 @@ const Dashboard = () => {
   const { user } = useSelector((state) => state.auth);
   const { todos } = useSelector((state) => state.todos);
   const [todoText, setTodoText] = useState('');
+  const [updatingTodo, setUpdatingTodo] = useState(false);
 
   useEffect(() => {
     if (!user) {
@@ -28,8 +29,11 @@ const Dashboard = () => {
   //Creating the to-dos
   const handleSubmit = (e) => {
     e.preventDefault();
-    dispatch(createTodo(todoText));
-    setTodoText('');
+    if (!updatingTodo) {
+      dispatch(createTodo(todoText));
+      setTodoText('');
+    } else {
+    }
   };
 
   const handleTodoChange = (e) => {
@@ -60,7 +64,12 @@ const Dashboard = () => {
             </StyledInputContainer>
           </form>
           {todos?.map((todo) => (
-            <Todo key={todo?._id} todo={todo}/>
+            <Todo
+              key={todo?._id}
+              todo={todo}
+              setTodoText={setTodoText}
+              setUpdatingTodo={setUpdatingTodo}
+            />
           ))}
         </StyledFormContainer>
       </StyledContainer>

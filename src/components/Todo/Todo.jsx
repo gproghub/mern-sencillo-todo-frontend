@@ -9,15 +9,19 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import moment from 'moment';
 import { deleteTodo, updateTodo } from '../../features/Todos/todosSlice';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
-const Todo = ({ todo = {} }) => {
+const Todo = ({ todo, setUpdatingTodo }) => {
+  //Migh be good to always declare a default value. CHECK
   const dispatch = useDispatch();
   const convertDate = (date) => {
     return moment(date).format('DD-MM-YYYY');
   };
 
-  const hanleEditTodoClick = (e) => {};
+  const hanleEditTodoClick = (e) => {
+    setUpdatingTodo(true);
+    dispatch(updateTodo(todo));
+  };
 
   const hanleDeleteTodoClick = () => {
     dispatch(deleteTodo(todo?._id));

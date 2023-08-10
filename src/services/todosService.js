@@ -18,15 +18,24 @@ const createTodo = async (token, todoText) => {
       Authorization: `Bearer ${token}`,
     },
   };
-  const bodyData = {
+  const body = {
     text: todoText,
   };
-  const response = await axios.post(`${BASE_URL}`, bodyData, config);
+  const response = await axios.post(`${BASE_URL}`, body, config);
   return response.data;
 };
 
-// const updateTodo = async(token, todoData)
-
+const updateTodo = async (token, todo) => {
+  const { _id, text } = todo;
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+  const response = await axios.patch(`${BASE_URL + _id}`, { text }, config);
+  console.log(response.data);
+  return response.data; //Whatever a respond from the updateTodo controller I will receive in response.data
+};
 
 const deleteTodo = async (token, todoId) => {
   const config = {
@@ -41,7 +50,8 @@ const deleteTodo = async (token, todoId) => {
 const todosService = {
   getTodos,
   createTodo,
-  deleteTodo
+  updateTodo,
+  deleteTodo,
 };
 
 export default todosService;
